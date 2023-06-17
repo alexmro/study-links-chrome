@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Saved Links",
+  "name": "StudyLinks",
   "description": "A simple tool that helps people save and organize links for research purposes",
   "version": "1.0",
   "icons": {

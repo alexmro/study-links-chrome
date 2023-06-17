@@ -1,6 +1,7 @@
-# Saved Links
+# StudyLinks
 
-A simple extension that helps people quickly save and organize links for research purposes
+A simple extension that helps people quickly save, classifya and organize links
+for study and research
 
 ## Features
 
@@ -28,6 +29,7 @@ A simple extension that helps people quickly save and organize links for researc
 - Donations
 - Help and support
 - Errors logging and reporting
+- Add notes to links
 
 ## Improvements
 
