@@ -1,0 +1,16 @@
+.saved-link-marker {
+    font-size: .8em;
+    padding: .2em;
+}
+
+.linkToRead, .linkToRead:active, .linkToRead:visited {
+    color: crimson !important;
+}
+
+.linkReading, .linkReading:active, .linkReading:visited {
+    color: steelblue !important;
+}
+
+.linkDone, .linkDone:active, .linkDone:visited {
+    color: chartreuse !important;
+}
