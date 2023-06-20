@@ -43,6 +43,16 @@
                 }
                 href = host + '/' + locationParts.join('/') + '/' + href.substr(3);
             }
+
+            if (!href.includes('://')) {
+                let locationParts = window.location.pathname.split('/').filter(i => i);
+                if (locationParts[locationParts.length - 1].includes('.')) {
+                    locationParts = locationParts.slice(0, -1);
+                    href = host + '/' + locationParts.join('/') + '/' + href;
+                } else {
+                    href = host + window.location.pathname + href;
+                }
+            }
         }
 
         return href;

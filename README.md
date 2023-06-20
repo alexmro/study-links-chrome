@@ -1,6 +1,6 @@
 # StudyLinks
 
-A simple extension that helps people quickly save, classifya and organize links
+A simple extension that helps people quickly save, classify and organize links
 for study and research
 
 ## Features
@@ -34,6 +34,7 @@ for study and research
 ## Improvements
 
 - [ ] Fix markers appearance on images or big elements
+- [ ] Use `activeTab` instead of `tabs` and update content when switching tabs
 - [ ] Don't show removal option if link not added to a list
 - [ ] Refresh marked links if the DOM changes and removes them
 - [ ] Show pages titles for saved links

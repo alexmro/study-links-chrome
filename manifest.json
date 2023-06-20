@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "StudyLinks",
   "description": "A simple tool that helps people save and organize links for research purposes",
-  "version": "1.0",
+  "version": "1.0.0",
   "icons": {
     "16": "images/icon-16.png",
     "32": "images/icon-32.png",
