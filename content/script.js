@@ -46,7 +46,7 @@
 
             if (!href.includes('://')) {
                 let locationParts = window.location.pathname.split('/').filter(i => i);
-                if (locationParts[locationParts.length - 1].includes('.')) {
+                if (locationParts.length > 0 && locationParts[locationParts.length - 1].includes('.')) {
                     locationParts = locationParts.slice(0, -1);
                     href = host + '/' + locationParts.join('/') + '/' + href;
                 } else {

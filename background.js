@@ -81,7 +81,6 @@ chrome.storage.sync.get(["linksDone"]).then((result) => {
 });
 
 chrome.contextMenus.onClicked.addListener(function(clickData) {
-    console.log(clickData);
     switch (clickData.menuItemId) {
         case "markLinkToRead":
             removeLink(clickData.linkUrl);
@@ -103,7 +102,7 @@ chrome.contextMenus.onClicked.addListener(function(clickData) {
             break;
     }
 
-    chrome.tabs.query({}, function(tabs) {
+    chrome.tabs.query({ active: true, lastFocusedWindow: true }, function(tabs) {
         tabs.forEach(tab => {
             if (!tab.url?.startsWith("chrome://") && !tab.url?.startsWith("edge://")) {
                 chrome.scripting.executeScript({
@@ -113,4 +112,18 @@ chrome.contextMenus.onClicked.addListener(function(clickData) {
             }
         })
     });
-})
+});
+
+chrome.tabs.onActivated.addListener(function(activeInfo) {
+    chrome.tabs.get(
+        activeInfo.tabId,
+        (tab) => {
+            if (!tab.url?.startsWith("chrome://") && !tab.url?.startsWith("edge://")) {
+                chrome.scripting.executeScript({
+                    target: {tabId: tab.id},
+                    files: [ "content/script.js" ],
+                });
+            }
+        }
+    )
+});

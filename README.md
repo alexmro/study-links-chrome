@@ -34,6 +34,7 @@ for study and research
 ## Improvements
 
 - [ ] Fix markers appearance on images or big elements
+- [ ] Fix markers appearance on elements with background color
 - [ ] Use `activeTab` instead of `tabs` and update content when switching tabs
 - [ ] Don't show removal option if link not added to a list
 - [ ] Refresh marked links if the DOM changes and removes them
