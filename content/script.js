@@ -14,6 +14,12 @@
         }
     });
 
+    /**
+     * Checks if an anchor element has a valid link for marking
+     * 
+     * @param {DOM} anchor Anchor element
+     * @returns 
+     */
     function validAnchor(anchor) {
         let href = anchor.getAttribute('href');
         if (href == null) {
@@ -36,21 +42,23 @@
                 href = host + window.location.pathname + href;
             }
 
-            if (href.substr(0, 3) == '../') {
-                let locationParts = window.location.pathname.split('/').filter(i => i);
-                if (locationParts[locationParts.length - 1].includes('.')) {
-                    locationParts = locationParts.slice(0, -2);
-                }
-                href = host + '/' + locationParts.join('/') + '/' + href.substr(3);
-            }
-
             if (!href.includes('://')) {
                 let locationParts = window.location.pathname.split('/').filter(i => i);
-                if (locationParts.length > 0 && locationParts[locationParts.length - 1].includes('.')) {
-                    locationParts = locationParts.slice(0, -1);
-                    href = host + '/' + locationParts.join('/') + '/' + href;
+
+                if (href[0] == '.') {
+                    href = host + '/' + locationParts.join('/');
+                } else if (href[0] == '..') {
+                    if (locationParts[locationParts.length - 1].includes('.')) {
+                        locationParts = locationParts.slice(0, -2);
+                    }
+                    href = host + '/' + locationParts.join('/') + '/' + href.substr(3);
                 } else {
-                    href = host + window.location.pathname + href;
+                    if (locationParts.length > 0 && locationParts[locationParts.length - 1].includes('.')) {
+                        locationParts = locationParts.slice(0, -1);
+                        href = host + '/' + locationParts.join('/') + '/' + href;
+                    } else {
+                        href = host + window.location.pathname + href;
+                    }
                 }
             }
         }
@@ -76,47 +84,24 @@
         anchor.appendChild(dom);
     }
 
-    chrome.storage.sync.get(["linksToRead"]).then((result) => {
-        if (typeof result.linksToRead !== 'undefined' && result.linksToRead.length > 0) {
-            let linksToRead = JSON.parse(result.linksToRead);
+    chrome.storage.local.get(["linksList"]).then((result) => {
+        if (typeof result.linksList !== 'undefined' && result.linksList.length > 0) {
+            let linksList = JSON.parse(result.linksList);
+            let markerTypes = {
+                pending: { icon: '📙', title: 'Pending', cssClass: 'linkPending' },
+                progress: { icon: '📘', title: 'In progress', cssClass: 'linkInProgress' },
+                done: { icon: '📗', title: 'Done', cssClass: 'linkDone' }
+            }
             anchors.forEach(anchor => {
                 if (validAnchor(anchor)) {
                     let href = anchor.getAttribute('href');
-                    if (linksToRead.includes(fullUrl(href))) {
-                        placeMarker(anchor, '📙', 'To be read');
-                        anchor.classList.add('linkToRead');
-                    }
-                }
-            });
-        }
-    });
-
-    chrome.storage.sync.get(["linksReading"]).then((result) => {
-        if (typeof result.linksReading !== 'undefined' && result.linksReading.length > 0) {
-            let linksReading = JSON.parse(result.linksReading);
-
-            anchors.forEach(anchor => {
-                if (validAnchor(anchor)) {
-                    let href = anchor.getAttribute('href');
-                    if (linksReading.includes(fullUrl(href))) {
-                        placeMarker(anchor, '📘', 'Still reading');
-                        anchor.classList.add('linkReading');
-                    }
-                }
-            });
-        }
-    });
-
-    chrome.storage.sync.get(["linksDone"]).then((result) => {
-        if (typeof result.linksDone !== 'undefined' && result.linksDone.length > 0) {
-            let linksDone = JSON.parse(result.linksDone);
-
-            anchors.forEach(anchor => {
-                if (validAnchor(anchor)) {
-                    let href = anchor.getAttribute('href');
-                    if (linksDone.includes(fullUrl(href))) {
-                        placeMarker(anchor, '📗', 'Done reading');
-                        anchor.classList.add('linkDone');
+                    let index = linksList.findIndex(link => link.url === fullUrl(href));
+                    if (index > -1) {
+                        let icon = markerTypes[linksList[index].status].icon;
+                        let title = markerTypes[linksList[index].status].title;
+                        let cssClass = markerTypes[linksList[index].status].cssClass;
+                        placeMarker(anchor, icon, title);
+                        anchor.classList.add(cssClass);
                     }
                 }
             });

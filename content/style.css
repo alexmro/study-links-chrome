@@ -3,11 +3,11 @@
     padding: .2em;
 }
 
-.linkToRead, .linkToRead:active, .linkToRead:visited {
+.linkPending, .linkPending:active, .linkPending:visited {
     color: crimson !important;
 }
 
-.linkReading, .linkReading:active, .linkReading:visited {
+.linkInProgress, .linkInProgress:active, .linkInProgress:visited {
     color: steelblue !important;
 }
 

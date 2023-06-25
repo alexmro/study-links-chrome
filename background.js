@@ -1,49 +1,50 @@
-let linksToRead = [];
-let linksReading = [];
-let linksDone = [];
+// list with all the links as objects
+let linksList = [];
 
-function removeLink(link) {
-    if (linksToRead.includes(link)) {
-        var index = linksToRead.indexOf(link);
-        if (index !== -1) {
-            linksToRead.splice(index, 1);
+async function addLink(url, status) {
+    let index = linksList.findIndex(link => link.url === url);
+    if (index > -1) {
+        if (linksList[index].status !== status) {
+            linksList[index].status = status;
+            chrome.storage.local.set({ linksList: JSON.stringify(linksList) });
         }
-        chrome.storage.sync.set({ linksToRead: JSON.stringify(linksToRead) });
+    } else {
+        linksList.push({ url: url, status: status });
+        chrome.storage.local.set({ linksList: JSON.stringify(linksList) });
     }
-    if (linksReading.includes(link)) {
-        var index = linksReading.indexOf(link);
-        if (index !== -1) {
-            linksReading.splice(index, 1);
-        }
-        chrome.storage.sync.set({ linksReading: JSON.stringify(linksReading) });
-    }
-    if (linksDone.includes(link)) {
-        var index = linksDone.indexOf(link);
-        if (index !== -1) {
-            linksDone.splice(index, 1);
-        }
-        chrome.storage.sync.set({ linksDone: JSON.stringify(linksDone) });
+}
+
+/**
+ * Removes a link by its URL
+ * 
+ * @param {String} url Absolute URL to remove
+ */
+async function removeLink(url) {
+    let index = linksList.findIndex(link => link.url === url);
+    if (index > -1) {
+        linksList.splice(index, 1);
+        chrome.storage.local.set({ linksList: JSON.stringify(linksList) });
     }
 }
 
 chrome.runtime.onInstalled.addListener(function() {
     chrome.contextMenus.create({
         "id": "markLink",
-        "title": "Mark link as",
+        "title": "Mark link",
         "contexts": [ "link" ]
     });
     
     chrome.contextMenus.create({
-        id: "markLinkToRead",
+        id: "markLinkPending",
         parentId: "markLink",
-        title: "📙 To read",
+        title: "📙 Pending",
         contexts: [ "link" ]
     });
     
     chrome.contextMenus.create({
-        id: "markLinkReading",
+        id: "markLinkInProgress",
         parentId: "markLink",
-        title: "📘 Reading",
+        title: "📘 In progress",
         contexts: [ "link" ]
     });
     
@@ -62,40 +63,22 @@ chrome.runtime.onInstalled.addListener(function() {
     });
 });
 
-chrome.storage.sync.get(["linksToRead"]).then((result) => {
-    if (typeof result.linksToRead !== 'undefined' && result.linksToRead.length > 0) {
-        linksToRead = JSON.parse(result.linksToRead);
-    }
-});
-
-chrome.storage.sync.get(["linksReading"]).then((result) => {
-    if (typeof result.linksReading !== 'undefined' && result.linksReading.length > 0) {
-        linksReading = JSON.parse(result.linksReading);
-    }
-});
-
-chrome.storage.sync.get(["linksDone"]).then((result) => {
-    if (typeof result.linksDone !== 'undefined' && result.linksDone.length > 0) {
-        linksDone = JSON.parse(result.linksDone);
+chrome.storage.local.get(["linksList"]).then((result) => {
+    if (typeof result.linksList !== 'undefined' && result.linksList.length > 0) {
+        linksList = JSON.parse(result.linksList);
     }
 });
 
 chrome.contextMenus.onClicked.addListener(function(clickData) {
     switch (clickData.menuItemId) {
-        case "markLinkToRead":
-            removeLink(clickData.linkUrl);
-            linksToRead.push(clickData.linkUrl);
-            chrome.storage.sync.set({ linksToRead: JSON.stringify(linksToRead) });
+        case "markLinkPending":
+            addLink(clickData.linkUrl, 'pending');
             break;
-        case "markLinkReading":
-            removeLink(clickData.linkUrl);
-            linksReading.push(clickData.linkUrl);
-            chrome.storage.sync.set({ linksReading: JSON.stringify(linksReading) });
+        case "markLinkInProgress":
+            addLink(clickData.linkUrl, 'progress');
             break;
         case "markLinkDone":
-            removeLink(clickData.linkUrl);
-            linksDone.push(clickData.linkUrl);
-            chrome.storage.sync.set({ linksDone: JSON.stringify(linksDone) });
+            addLink(clickData.linkUrl, 'done');
             break;
         case "markLinkClear":
             removeLink(clickData.linkUrl);
@@ -104,7 +87,7 @@ chrome.contextMenus.onClicked.addListener(function(clickData) {
 
     chrome.tabs.query({ active: true, lastFocusedWindow: true }, function(tabs) {
         tabs.forEach(tab => {
-            if (!tab.url?.startsWith("chrome://") && !tab.url?.startsWith("edge://")) {
+            if (typeof tab.url !== 'undefined') {
                 chrome.scripting.executeScript({
                     target: {tabId: tab.id},
                     files: [ "content/script.js" ],
@@ -118,7 +101,7 @@ chrome.tabs.onActivated.addListener(function(activeInfo) {
     chrome.tabs.get(
         activeInfo.tabId,
         (tab) => {
-            if (!tab.url?.startsWith("chrome://") && !tab.url?.startsWith("edge://")) {
+            if (typeof tab.url !== 'undefined') {
                 chrome.scripting.executeScript({
                     target: {tabId: tab.id},
                     files: [ "content/script.js" ],
