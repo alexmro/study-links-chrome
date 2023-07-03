@@ -31,10 +31,13 @@ for study and research
 - [ ] Help and support
 - [ ] Errors logging and reporting
 - [ ] Add notes to links
+- [ ] Save parent/referral link
+- [ ] Save all links on a page to a list with one click
+- [ ] Keyboard shortcuts
 
 ## Improvements
 
-- [ ] Fix markers appearance on images or big elements
+- [x] Fix markers appearance on images or big elements
 - [ ] Fix markers appearance on elements with background color
 - [x] Use `activeTab` instead of `tabs` and update content when switching tabs
 - [ ] Don't show removal option if link not added to a list

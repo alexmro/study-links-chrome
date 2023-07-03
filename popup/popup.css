@@ -3,7 +3,34 @@ body {
     padding: 1em;
 }
 
+h1 {
+    font-size: 1.4em;
+}
+
 ul {
     list-style: none;
     padding: 0;
+}
+
+.hidden {
+    display: none;
+}
+
+.tabs-header {
+    display: flex;
+}
+
+.tabs-header li {
+    background-color: aliceblue;
+    border-top-left-radius: .5em;
+    border-top-right-radius: .5em;
+    cursor: pointer;
+    padding: .5em;
+    text-align: center;
+}
+
+.tabs-header li.active {
+    background-color: white;
+    border: 2px solid aliceblue;
+    cursor: default;
 }

@@ -36,6 +36,10 @@
         let host = window.location.protocol + '//' + window.location.hostname;
 
         if (href.length > 0) {
+            if (href.substr(0, 2) == '//') {
+                href = window.location.protocol + href;
+            }
+
             if (href[0] == '/') {
                 href = host + href;
             } else if (href[0] == '#') {
@@ -46,7 +50,13 @@
                 let locationParts = window.location.pathname.split('/').filter(i => i);
 
                 if (href[0] == '.') {
+                    let hrefParts = href.substr(1).split('/');
                     href = host + '/' + locationParts.join('/');
+                    if (locationParts.length > 0) {
+                        href = host + '/' + locationParts.join('/');
+                    } else {
+                        href = host + hrefParts.join('/');
+                    }
                 } else if (href[0] == '..') {
                     if (locationParts[locationParts.length - 1].includes('.')) {
                         locationParts = locationParts.slice(0, -2);
@@ -55,7 +65,8 @@
                 } else {
                     if (locationParts.length > 0 && locationParts[locationParts.length - 1].includes('.')) {
                         locationParts = locationParts.slice(0, -1);
-                        href = host + '/' + locationParts.join('/') + '/' + href;
+                        href = host + '/' + locationParts.join('/') + 
+                            (locationParts.length > 0 ? '/' : '') + href;
                     } else {
                         href = host + window.location.pathname + href;
                     }

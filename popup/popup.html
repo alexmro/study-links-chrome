@@ -7,8 +7,15 @@
   <body>
     <h1><img src="../images/icon-16.png" alt="Study Links"> Study Links</h1>
     <p>Thanks for using this extension</p>
-    <hr>
-    <h2>Latest saved links</h2>
-    <ul id="latest-links-list"></ul>
+    <ul class="tabs-header">
+      <li id="latest-links-tab" class="active">Last links</li>
+      <li id="website-links-tab">This website</li>
+    </ul>
+    <div id="latest-links-container">
+      <ul id="latest-links-list"></ul>
+    </div>
+    <div id="website-links-container" class="hidden">
+      <ul id="website-links-list"></ul>
+    </div>
   </body>
 </html>

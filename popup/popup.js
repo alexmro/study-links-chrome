@@ -3,42 +3,63 @@
         'DOMContentLoaded',
         () => {
             let latestLinksList = document.getElementById("latest-links-list");
+            let websiteLinksList = document.getElementById("website-links-list");
+
+            chrome.storage.local.get(["linksList"]).then((result) => {
+                if (typeof result.linksList !== 'undefined' && result.linksList.length > 0) {
+                    let linksList1 = JSON.parse(result.linksList);
+                    let linksList2 = [];
+                    let markerTypes = {
+                        pending: { icon: '📙', title: 'Pending', cssClass: 'linkPending' },
+                        progress: { icon: '📘', title: 'In progress', cssClass: 'linkInProgress' },
+                        done: { icon: '📗', title: 'Done', cssClass: 'linkDone' }
+                    }
+
+                    linksList1.slice(-20).reverse().forEach(link => {
+                        let icon = markerTypes[link.status].icon;
+
+                        let item = document.createElement('li');
+                        item.innerHTML = icon + ' <a href="' + link.url + '" target="_blank">' + 
+                        link.url.substring(0, 42) + '</a>';
+                        latestLinksList.appendChild(item);
+                    });
+
+                    chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
+                            if (tabs.length > 0) {
+                                var tabUrl = tabs[0].url;
+
+                                linksList1.forEach(link => {
+                                    if (link.url.includes(tabUrl)) {
+                                        linksList2.push(link);
+                                    }
+                                });
             
-            chrome.storage.sync.get(["linksToRead"]).then((result) => {
-                latestLinksList.innerHTML = '';
-                if (typeof result.linksToRead !== 'undefined' && result.linksToRead.length > 0) {
-                    let linksToRead = JSON.parse(result.linksToRead);
-                    linksToRead.slice(-5).forEach(link => {
-                        let item = document.createElement('li');
-                        item.innerHTML = '📙 <a href="' + link + '" target="_blank">' + 
-                        link.substring(0, 48) + '</a>';
-                        latestLinksList.appendChild(item);
-                    });
+                                linksList2.slice(-20).reverse().forEach(link => {
+                                    let icon = markerTypes[link.status].icon;
+            
+                                    let item = document.createElement('li');
+                                    item.innerHTML = icon + ' <a href="' + link.url + '" target="_blank">' + 
+                                    link.url.substring(0, 42) + '</a>';
+                                    websiteLinksList.appendChild(item);
+                                });
+                            }
+                        }
+                    );
                 }
             });
 
-            chrome.storage.sync.get(["linksReading"]).then((result) => {
-                if (typeof result.linksReading !== 'undefined' && result.linksReading.length > 0) {
-                    let linksReading = JSON.parse(result.linksReading);
-                    linksReading.slice(-5).forEach(link => {
-                        let item = document.createElement('li');
-                        item.innerHTML = '📘 <a href="' + link + '" target="_blank">' + 
-                        link.substring(0, 48) + '</a>';
-                        latestLinksList.appendChild(item);
-                    });
-                }
+            document.getElementById('website-links-tab').addEventListener('click', () => {
+                document.getElementById('latest-links-tab').className = '';
+                document.getElementById('website-links-tab').className = 'active';
+                document.getElementById('latest-links-container').className = 'hidden';
+                document.getElementById('website-links-container').className = '';
             });
 
-            chrome.storage.sync.get(["linksDone"]).then((result) => {
-                if (typeof result.linksDone !== 'undefined' && result.linksDone.length > 0) {
-                    let linksDone = JSON.parse(result.linksDone);
-                    linksDone.slice(-5).forEach(link => {
-                        let item = document.createElement('li');
-                        item.innerHTML = '📗 <a href="' + link + '" target="_blank">' + 
-                        link.substring(0, 48) + '</a>';
-                        latestLinksList.appendChild(item);
-                    });
-                }
+            document.getElementById('latest-links-tab').addEventListener('click', () => {
+                document.getElementById('website-links-tab').className = '';
+                document.getElementById('latest-links-tab').className = 'active';
+                document.getElementById('website-links-container').className = 'hidden';
+                document.getElementById('latest-links-container').className = '';
             });
         },
         false

@@ -4,7 +4,7 @@ let linksList = [];
 async function addLink(url, status) {
     let index = linksList.findIndex(link => link.url === url);
     if (index > -1) {
-        if (linksList[index].status !== status) {
+        if (linksList[index].status != status) {
             linksList[index].status = status;
             chrome.storage.local.set({ linksList: JSON.stringify(linksList) });
         }
@@ -20,9 +20,13 @@ async function addLink(url, status) {
  * @param {String} url Absolute URL to remove
  */
 async function removeLink(url) {
-    let index = linksList.findIndex(link => link.url === url);
-    if (index > -1) {
-        linksList.splice(index, 1);
+    var deleted = [];
+    for (var i = 0; i < linksList.length; i++) {
+        if (linksList[i].url == url) {
+            deleted = deleted.concat(linksList.splice(i, 1));
+        }
+    }
+    if (deleted.length > 0) {
         chrome.storage.local.set({ linksList: JSON.stringify(linksList) });
     }
 }
